@@ -1,17 +1,13 @@
 package com.eg.planeticket.service;
 
 import com.eg.planeticket.dto.*;
-import com.eg.planeticket.entity.Airport;
-import com.eg.planeticket.entity.City;
-import com.eg.planeticket.entity.Company;
-import com.eg.planeticket.entity.Route;
-import com.eg.planeticket.repo.CityRepo;
-import com.eg.planeticket.repo.CompanyRepo;
-import com.eg.planeticket.repo.RouteRepo;
+import com.eg.planeticket.entity.*;
+import com.eg.planeticket.repo.*;
 import com.eg.planeticket.util.Dto2Entity;
-import com.eg.planeticket.repo.AirportRepo;
 import com.eg.planeticket.util.Entity2Dto;
 import org.springframework.stereotype.Service;
+import sun.security.krb5.internal.ccache.FileCredentialsCache;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -23,14 +19,17 @@ public class MainService {
     private final Entity2Dto entity2Dto;
     private final CompanyRepo companyRepo;
     private final RouteRepo routeRepo;
+    private final CompanyFlightRepo companyFlightRepo;
 
-    public MainService(AirportRepo airportRepo, CityRepo cityRepo, Dto2Entity dto2Entity, Entity2Dto entity2Dto, CompanyRepo companyRepo, RouteRepo routeRepo) {
+    public MainService(AirportRepo airportRepo, CityRepo cityRepo, Dto2Entity dto2Entity, Entity2Dto entity2Dto,
+                       CompanyRepo companyRepo, RouteRepo routeRepo, CompanyFlightRepo companyFlightRepo) {
         this.airportRepo = airportRepo;
         this.cityRepo = cityRepo;
         this.dto2Entity = dto2Entity;
         this.entity2Dto = entity2Dto;
         this.companyRepo = companyRepo;
         this.routeRepo = routeRepo;
+        this.companyFlightRepo = companyFlightRepo;
     }
 
     public Long createAirport(CreateAirport createAirport) {
@@ -89,10 +88,25 @@ public class MainService {
         return route.getId();
     }
 
-    public ReadRouteList readRoutes(Long fromId, Long toId, OffsetDateTime departure, OffsetDateTime arrival) {
-        List<Route> routeList = routeRepo.findAllByParams(fromId, toId, departure, arrival);
+    public ReadRouteList readRoutes(Long fromId, Long toId) {
+        List<Route> routeList = routeRepo.findAllByParams(fromId, toId);
         ReadRouteList readRouteList = entity2Dto.routeList2ReadRouteList(routeList);
 
         return readRouteList;
+    }
+
+    public Long createCompanyFlight(CreateCompanyFlight createCompanyFlight) {
+        CompanyFlight companyFlight = dto2Entity.createCompanyFlight2CompanyFlight(createCompanyFlight);
+        companyFlight = companyFlightRepo.save(companyFlight);
+
+        return companyFlight.getId();
+    }
+
+
+    public ReadCompanyFlightList readCompanyFlights(Long companyId, Long routeId, OffsetDateTime departure, OffsetDateTime arrival) {
+        List<CompanyFlight> flightList = companyFlightRepo.findAllByParams(companyId, routeId, departure, arrival);
+        ReadCompanyFlightList readCompanyFlightList = entity2Dto.companyFlightList2ReadCompanyFlightList(flightList);
+
+        return readCompanyFlightList;
     }
 }

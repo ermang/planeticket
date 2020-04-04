@@ -1,12 +1,11 @@
 package com.eg.planeticket.util;
 
 import com.eg.planeticket.dto.*;
-import com.eg.planeticket.entity.Airport;
-import com.eg.planeticket.entity.City;
-import com.eg.planeticket.entity.Company;
-import com.eg.planeticket.entity.Route;
+import com.eg.planeticket.entity.*;
 import com.eg.planeticket.repo.AirportRepo;
 import com.eg.planeticket.repo.CityRepo;
+import com.eg.planeticket.repo.CompanyRepo;
+import com.eg.planeticket.repo.RouteRepo;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +17,14 @@ public class Dto2Entity {
 
     private final CityRepo cityRepo;
     private final AirportRepo airportRepo;
+    private final CompanyRepo companyRepo;
+    private final RouteRepo routeRepo;
 
-    public Dto2Entity(CityRepo cityRepo, AirportRepo airportRepo) {
+    public Dto2Entity(CityRepo cityRepo, AirportRepo airportRepo, CompanyRepo companyRepo, RouteRepo routeRepo) {
         this.cityRepo = cityRepo;
         this.airportRepo = airportRepo;
+        this.companyRepo = companyRepo;
+        this.routeRepo = routeRepo;
     }
 
     public Airport createAirport2Airport(CreateAirport createAirport) {
@@ -69,9 +72,31 @@ public class Dto2Entity {
         else
             throw new RuntimeException("AIRPORT WITH ID " + createRoute.toId + " DOES NOT EXIST");
 
-        r.setArrival(createRoute.arrival);
-        r.setDeparture(createRoute.departure);
-
         return r;
+    }
+
+    public CompanyFlight createCompanyFlight2CompanyFlight(CreateCompanyFlight createCompanyFlight) {
+        CompanyFlight cf = new CompanyFlight();
+
+        Optional<Company> c = companyRepo.findById(createCompanyFlight.companyId);
+
+        if(c.isPresent())
+            cf.setCompany(c.get());
+        else
+            throw new RuntimeException("COMPANY WITH ID " + createCompanyFlight.companyId + " DOES NOT EXIST");
+
+        Optional<Route> r = routeRepo.findById(createCompanyFlight.routeId);
+
+        if(r.isPresent())
+            cf.setRoute(r.get());
+        else
+            throw new RuntimeException("ROUTE WITH ID " + createCompanyFlight.routeId + " DOES NOT EXIST");
+
+        cf.setMaxCapacity(createCompanyFlight.maxCapacity);
+        cf.setPrice(createCompanyFlight.price);
+        cf.setDeparture(createCompanyFlight.departure);
+        cf.setArrival(createCompanyFlight.arrival);
+
+        return cf;
     }
 }

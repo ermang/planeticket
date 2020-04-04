@@ -12,9 +12,6 @@ public interface RouteRepo extends JpaRepository<Route, Long> {
 
     @Query(value = "select r from Route r where"
             + " (:fromId IS NULL OR r.from.id = :fromId) AND"
-            + " (:toId IS NULL OR r.to.id= :toId) AND"
-            + " (:departure IS NULL OR r.departure >= :departure) AND"
-            + " (:arrival IS NULL OR r.arrival <= :arrival)")
-    List<Route> findAllByParams(@Param("fromId") Long fromId, @Param("toId") Long toId,
-                                @Param("departure") OffsetDateTime departure, @Param("arrival") OffsetDateTime arrival);
+            + " (:toId IS NULL OR r.to.id= :toId)")
+    List<Route> findAllByParams(@Param("fromId") Long fromId, @Param("toId") Long toId);
 }

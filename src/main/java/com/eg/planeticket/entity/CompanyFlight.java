@@ -5,6 +5,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 
 @Entity
 public class CompanyFlight extends BaseEntity {
@@ -18,6 +19,12 @@ public class CompanyFlight extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "route_id")
     private Route route;
+
+    @NotNull
+    private OffsetDateTime departure;
+
+    @NotNull
+    private OffsetDateTime arrival;
 
     @NotNull
     private Long maxCapacity;
@@ -42,6 +49,22 @@ public class CompanyFlight extends BaseEntity {
 
     public void setRoute(Route route) {
         this.route = route;
+    }
+
+    public OffsetDateTime getDeparture() {
+        return departure;
+    }
+
+    public void setDeparture(OffsetDateTime departure) {
+        this.departure = departure;
+    }
+
+    public OffsetDateTime getArrival() {
+        return arrival;
+    }
+
+    public void setArrival(OffsetDateTime arrival) {
+        this.arrival = arrival;
     }
 
     public Long getMaxCapacity() {

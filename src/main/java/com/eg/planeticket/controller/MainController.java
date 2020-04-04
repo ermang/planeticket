@@ -5,6 +5,7 @@ import com.eg.planeticket.service.MainService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @RestController
@@ -74,12 +75,29 @@ public class MainController {
 
     @GetMapping("/routes")
     public ReadRouteList readRouteList(@RequestParam(required = false)  Long fromId,
-                                       @RequestParam(required = false) Long toId,
-                                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime departure,
-                                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime arrival){
+                                       @RequestParam(required = false) Long toId){
         ReadRouteList result = null;
 
-        result = mainService.readRoutes(fromId, toId, departure, arrival);
+        result = mainService.readRoutes(fromId, toId);
+
+        return result;
+    }
+
+    @PostMapping("/companyflight")
+    public Long createCompanyFlight(@RequestBody CreateCompanyFlight createCompanyFlight) {
+        Long result = mainService.createCompanyFlight(createCompanyFlight);
+
+        return result;
+    }
+
+    @GetMapping("/companyflights")
+    public ReadCompanyFlightList readCompanyFlightList(@RequestParam(required = false)  Long companyId,
+                                               @RequestParam(required = false) Long routeId,
+                                               @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime departure,
+                                               @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime arrival){
+        ReadCompanyFlightList result = null;
+
+        result = mainService.readCompanyFlights(companyId, routeId, departure, arrival);
 
         return result;
     }

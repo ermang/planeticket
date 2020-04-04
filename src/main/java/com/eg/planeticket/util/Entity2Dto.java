@@ -3,6 +3,7 @@ package com.eg.planeticket.util;
 import com.eg.planeticket.dto.*;
 import com.eg.planeticket.entity.Airport;
 import com.eg.planeticket.entity.Company;
+import com.eg.planeticket.entity.CompanyFlight;
 import com.eg.planeticket.entity.Route;
 import org.springframework.stereotype.Service;
 
@@ -69,9 +70,31 @@ public class Entity2Dto {
         rr.id = route.getId();
         rr.fromId = route.getFrom().getId();
         rr.toId = route.getTo().getId();
-        rr.departure = route.getDeparture();
-        rr.arrival = route.getArrival();
 
         return rr;
+    }
+
+    public ReadCompanyFlightList companyFlightList2ReadCompanyFlightList(List<CompanyFlight> companyFlightList) {
+        ReadCompanyFlightList rcfl = new ReadCompanyFlightList();
+        List<ReadCompanyFlight> list = new ArrayList<>();
+
+        for(CompanyFlight companyFlight: companyFlightList)
+            list.add(companyFlight2ReadCompanyFlight(companyFlight));
+
+        rcfl.list = list;
+
+        return rcfl;
+    }
+
+    private ReadCompanyFlight companyFlight2ReadCompanyFlight(CompanyFlight companyFlight) {
+        ReadCompanyFlight rcf = new ReadCompanyFlight();
+        rcf.id = companyFlight.getId();
+        rcf.companyId = companyFlight.getCompany().getId();
+        rcf.routeId = companyFlight.getRoute().getId();
+        rcf.departure = companyFlight.getDeparture();
+        rcf.arrival = companyFlight.getArrival();
+        rcf.price = companyFlight.getPrice();
+
+        return rcf;
     }
 }
