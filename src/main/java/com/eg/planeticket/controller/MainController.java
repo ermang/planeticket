@@ -2,7 +2,10 @@ package com.eg.planeticket.controller;
 
 import com.eg.planeticket.dto.*;
 import com.eg.planeticket.service.MainService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.OffsetDateTime;
 
 @RestController
 public class MainController {
@@ -58,6 +61,25 @@ public class MainController {
             result = mainService.readAirports(cityId);
         else
             result = mainService.readAirports();
+
+        return result;
+    }
+
+    @PostMapping("/route")
+    public Long createRoute(@RequestBody CreateRoute createRoute) {
+        Long result = mainService.createRoute(createRoute);
+
+        return result;
+    }
+
+    @GetMapping("/routes")
+    public ReadRouteList readRouteList(@RequestParam(required = false)  Long fromId,
+                                       @RequestParam(required = false) Long toId,
+                                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime departure,
+                                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime arrival){
+        ReadRouteList result = null;
+
+        result = mainService.readRoutes(fromId, toId, departure, arrival);
 
         return result;
     }

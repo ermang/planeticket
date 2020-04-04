@@ -1,12 +1,11 @@
 package com.eg.planeticket.util;
 
-import com.eg.planeticket.dto.CreateAirport;
-import com.eg.planeticket.dto.CreateCity;
-import com.eg.planeticket.dto.CreateCompany;
-import com.eg.planeticket.dto.ReadAirportList;
+import com.eg.planeticket.dto.*;
 import com.eg.planeticket.entity.Airport;
 import com.eg.planeticket.entity.City;
 import com.eg.planeticket.entity.Company;
+import com.eg.planeticket.entity.Route;
+import com.eg.planeticket.repo.AirportRepo;
 import com.eg.planeticket.repo.CityRepo;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
@@ -18,9 +17,11 @@ import java.util.Optional;
 public class Dto2Entity {
 
     private final CityRepo cityRepo;
+    private final AirportRepo airportRepo;
 
-    public Dto2Entity(CityRepo cityRepo) {
+    public Dto2Entity(CityRepo cityRepo, AirportRepo airportRepo) {
         this.cityRepo = cityRepo;
+        this.airportRepo = airportRepo;
     }
 
     public Airport createAirport2Airport(CreateAirport createAirport) {
@@ -50,5 +51,27 @@ public class Dto2Entity {
         c.setName(createCompany.name);
 
         return c;
+    }
+
+    public Route createRoute2Route(CreateRoute createRoute) {
+        Route r = new Route();
+        Optional<Airport> from = airportRepo.findById(createRoute.fromId);
+
+        if(from.isPresent())
+            r.setFrom(from.get());
+        else
+            throw new RuntimeException("AIRPORT WITH ID " + createRoute.fromId + " DOES NOT EXIST");
+
+        Optional<Airport> to = airportRepo.findById(createRoute.toId);
+
+        if(to.isPresent())
+            r.setTo(to.get());
+        else
+            throw new RuntimeException("AIRPORT WITH ID " + createRoute.toId + " DOES NOT EXIST");
+
+        r.setArrival(createRoute.arrival);
+        r.setDeparture(createRoute.departure);
+
+        return r;
     }
 }

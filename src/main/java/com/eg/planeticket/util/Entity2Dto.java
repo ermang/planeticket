@@ -1,11 +1,9 @@
 package com.eg.planeticket.util;
 
-import com.eg.planeticket.dto.ReadAirport;
-import com.eg.planeticket.dto.ReadAirportList;
-import com.eg.planeticket.dto.ReadCompany;
-import com.eg.planeticket.dto.ReadCompanyList;
+import com.eg.planeticket.dto.*;
 import com.eg.planeticket.entity.Airport;
 import com.eg.planeticket.entity.Company;
+import com.eg.planeticket.entity.Route;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -52,5 +50,28 @@ public class Entity2Dto {
         rc.name = company.getName();
 
         return rc;
+    }
+
+    public ReadRouteList routeList2ReadRouteList(List<Route> routeList) {
+        ReadRouteList rl = new ReadRouteList();
+        List<ReadRoute> list = new ArrayList<>();
+
+        for(Route route: routeList)
+            list.add(route2ReadRoute(route));
+
+        rl.list = list;
+
+        return rl;
+    }
+
+    private ReadRoute route2ReadRoute(Route route) {
+        ReadRoute rr = new ReadRoute();
+        rr.id = route.getId();
+        rr.fromId = route.getFrom().getId();
+        rr.toId = route.getTo().getId();
+        rr.departure = route.getDeparture();
+        rr.arrival = route.getArrival();
+
+        return rr;
     }
 }
