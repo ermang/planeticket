@@ -32,7 +32,7 @@ public class Dto2Entity {
         if(c.isPresent())
             a.setCity(c.get());
         else
-            throw new RuntimeException("CTIY WITH ID " + createAirport.cityId + "DOES NOT EXIST");
+            throw new RuntimeException("CTIY WITH ID " + createAirport.cityId + " DOES NOT EXIST");
 
         a.setName(createAirport.name);
 

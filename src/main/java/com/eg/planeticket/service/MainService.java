@@ -6,12 +6,14 @@ import com.eg.planeticket.repo.*;
 import com.eg.planeticket.util.Dto2Entity;
 import com.eg.planeticket.util.Entity2Dto;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Transactional
 @Service
 public class MainService {
     private final AirportRepo airportRepo;
@@ -132,7 +134,7 @@ public class MainService {
             BigDecimal newCapacityRatio = new BigDecimal(companyFlight.getCapacity() +1).divide(new BigDecimal(companyFlight.getMaxCapacity()));
             newCapacityRatio = newCapacityRatio.setScale(1, BigDecimal.ROUND_HALF_DOWN);
 
-            if (currentCapacityRatio.compareTo(newCapacityRatio) != 0) {
+            if (isPriceReCalculationRequired(currentCapacityRatio, newCapacityRatio)) {
                 BigDecimal newPrice = calculatePrice(companyFlight.getBasePrice(), currentCapacityRatio);
                 companyFlight.setPrice(newPrice);
             }
@@ -147,6 +149,10 @@ public class MainService {
             throw new RuntimeException("COMPANYFLIGHT WITH ID " + buyTicket.companyFlightId + " DOES NOT EXIST");
     }
 
+    private boolean isPriceReCalculationRequired(BigDecimal currentCapacityRatio, BigDecimal newCapacityRatio) {
+        return currentCapacityRatio.compareTo(newCapacityRatio) != 0;
+    }
+
     public Long deleteTicket(long ticketId) {
         Optional<Ticket> t = ticketRepo.findById(ticketId);
         if(t.isPresent()){
@@ -159,7 +165,7 @@ public class MainService {
             BigDecimal newCapacityRatio = new BigDecimal(companyFlight.getCapacity() -1).divide(new BigDecimal(companyFlight.getMaxCapacity()));
             newCapacityRatio = newCapacityRatio.setScale(1, BigDecimal.ROUND_HALF_DOWN);
 
-            if (currentCapacityRatio.compareTo(newCapacityRatio) != 0) {
+            if (isPriceReCalculationRequired(currentCapacityRatio, newCapacityRatio)) {
                 BigDecimal newPrice = calculatePrice(companyFlight.getBasePrice(), currentCapacityRatio);
                 companyFlight.setPrice(newPrice);
             }
