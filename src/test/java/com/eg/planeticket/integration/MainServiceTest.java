@@ -4,6 +4,7 @@ import com.eg.planeticket.TestUtil;
 import com.eg.planeticket.dto.*;
 import com.eg.planeticket.repo.*;
 import com.eg.planeticket.service.MainService;
+import com.eg.planeticket.service.PriceService;
 import com.eg.planeticket.util.Dto2Entity;
 import com.eg.planeticket.util.Entity2Dto;
 import org.junit.Assert;
@@ -38,6 +39,8 @@ public class MainServiceTest {
     private Dto2Entity dto2Entity;
     @Autowired
     private Entity2Dto entity2Dto;
+    @Autowired
+    private PriceService priceService;
 
     private MainService mainService;
     private TestUtil testUtil;
@@ -47,7 +50,7 @@ public class MainServiceTest {
         testUtil = new TestUtil();
 
         mainService = new MainService(airportRepo, cityRepo, dto2Entity, entity2Dto, companyRepo, routeRepo,
-                companyFlightRepo, ticketRepo);
+                companyFlightRepo, ticketRepo, priceService);
     }
 
     @Test

@@ -24,10 +24,11 @@ public class MainService {
     private final RouteRepo routeRepo;
     private final CompanyFlightRepo companyFlightRepo;
     private final TicketRepo ticketRepo;
+    private final PriceService priceService;
 
     public MainService(AirportRepo airportRepo, CityRepo cityRepo, Dto2Entity dto2Entity, Entity2Dto entity2Dto,
                        CompanyRepo companyRepo, RouteRepo routeRepo, CompanyFlightRepo companyFlightRepo,
-                       TicketRepo ticketRepo) {
+                       TicketRepo ticketRepo, PriceService priceService) {
         this.airportRepo = airportRepo;
         this.cityRepo = cityRepo;
         this.dto2Entity = dto2Entity;
@@ -36,6 +37,7 @@ public class MainService {
         this.routeRepo = routeRepo;
         this.companyFlightRepo = companyFlightRepo;
         this.ticketRepo = ticketRepo;
+        this.priceService = priceService;
     }
 
     public Long createAirport(CreateAirport createAirport) {
@@ -127,21 +129,17 @@ public class MainService {
             Ticket t = new Ticket();
             t.setCompanyFlight(companyFlight);
             t.setUserId(buyTicket.userId);
-            t = ticketRepo.save(t);
 
-            BigDecimal currentCapacityRatio = new BigDecimal(companyFlight.getCapacity()).divide(new BigDecimal(companyFlight.getMaxCapacity()));
-            currentCapacityRatio = currentCapacityRatio.setScale(1, BigDecimal.ROUND_HALF_DOWN);
-            BigDecimal newCapacityRatio = new BigDecimal(companyFlight.getCapacity() +1).divide(new BigDecimal(companyFlight.getMaxCapacity()));
-            newCapacityRatio = newCapacityRatio.setScale(1, BigDecimal.ROUND_HALF_DOWN);
-
-            if (isPriceReCalculationRequired(currentCapacityRatio, newCapacityRatio)) {
-                BigDecimal newPrice = calculatePrice(companyFlight.getBasePrice(), currentCapacityRatio);
+            if (priceService.isPriceReCalculationRequired(companyFlight.getCapacity(),
+                    companyFlight.getCapacity() + 1, companyFlight.getMaxCapacity())) {
+                BigDecimal newPrice = priceService.calculatePrice(companyFlight.getBasePrice(),
+                        companyFlight.getCapacity() + 1, companyFlight.getMaxCapacity());
                 companyFlight.setPrice(newPrice);
             }
 
             companyFlight.setCapacity(companyFlight.getCapacity() + 1);
             companyFlight = companyFlightRepo.save(companyFlight);
-
+            t = ticketRepo.save(t);
 
             return t.getId();
         }
@@ -149,28 +147,21 @@ public class MainService {
             throw new RuntimeException("COMPANYFLIGHT WITH ID " + buyTicket.companyFlightId + " DOES NOT EXIST");
     }
 
-    private boolean isPriceReCalculationRequired(BigDecimal currentCapacityRatio, BigDecimal newCapacityRatio) {
-        return currentCapacityRatio.compareTo(newCapacityRatio) != 0;
-    }
-
     public Long deleteTicket(long ticketId) {
         Optional<Ticket> t = ticketRepo.findById(ticketId);
         if(t.isPresent()){
             Ticket ticket = t.get();
             CompanyFlight companyFlight = companyFlightRepo.findById(ticket.getCompanyFlight().getId()).get();
-            companyFlight.setCapacity(companyFlight.getCapacity() -1);
 
-            BigDecimal currentCapacityRatio = new BigDecimal(companyFlight.getCapacity()).divide(new BigDecimal(companyFlight.getMaxCapacity()));
-            currentCapacityRatio = currentCapacityRatio.setScale(1, BigDecimal.ROUND_HALF_DOWN);
-            BigDecimal newCapacityRatio = new BigDecimal(companyFlight.getCapacity() -1).divide(new BigDecimal(companyFlight.getMaxCapacity()));
-            newCapacityRatio = newCapacityRatio.setScale(1, BigDecimal.ROUND_HALF_DOWN);
-
-            if (isPriceReCalculationRequired(currentCapacityRatio, newCapacityRatio)) {
-                BigDecimal newPrice = calculatePrice(companyFlight.getBasePrice(), currentCapacityRatio);
+            if (priceService.isPriceReCalculationRequired(companyFlight.getCapacity(),
+                    companyFlight.getCapacity() -1, companyFlight.getMaxCapacity())) {
+                BigDecimal newPrice = priceService.calculatePrice(companyFlight.getBasePrice(),
+                        companyFlight.getCapacity() - 1, companyFlight.getMaxCapacity());
                 companyFlight.setPrice(newPrice);
             }
 
-            companyFlightRepo.save(companyFlight);
+            companyFlight.setCapacity(companyFlight.getCapacity() -1);
+            companyFlight = companyFlightRepo.save(companyFlight);
             ticketRepo.deleteById(ticket.getId());
 
             return ticket.getId();
@@ -178,32 +169,6 @@ public class MainService {
         else
             throw new RuntimeException("TICKET WITH ID " + ticketId + " DOES NOT EXIST");
     }
-
-    private BigDecimal calculatePrice(BigDecimal basePrice, BigDecimal currentCapacityRatio) {
-        BigDecimal newPrice = basePrice;
-
-        if(currentCapacityRatio.compareTo(new BigDecimal("0.9")) > -1)
-            newPrice = newPrice.multiply(new BigDecimal("1.9"));
-        else if(currentCapacityRatio.compareTo(new BigDecimal("0.8")) > -1)
-            newPrice = newPrice.multiply(new BigDecimal("1.8"));
-        else if(currentCapacityRatio.compareTo(new BigDecimal("0.7")) > -1)
-            newPrice = newPrice.multiply(new BigDecimal("1.7"));
-        else if(currentCapacityRatio.compareTo(new BigDecimal("0.6")) > -1)
-            newPrice = newPrice.multiply(new BigDecimal("1.6"));
-        else if(currentCapacityRatio.compareTo(new BigDecimal("0.5")) > -1)
-            newPrice = newPrice.multiply(new BigDecimal("1.5"));
-        else if(currentCapacityRatio.compareTo(new BigDecimal("0.4")) > -1)
-            newPrice = newPrice.multiply(new BigDecimal("1.4"));
-        else if(currentCapacityRatio.compareTo(new BigDecimal("0.3")) > -1)
-            newPrice = newPrice.multiply(new BigDecimal("1.3"));
-        else if(currentCapacityRatio.compareTo(new BigDecimal("0.2")) > -1)
-            newPrice = newPrice.multiply(new BigDecimal("1.2"));
-        else if(currentCapacityRatio.compareTo(new BigDecimal("0.1")) > -1)
-            newPrice = newPrice.multiply(new BigDecimal("1.1"));
-        return newPrice;
-    }
-
-
 
     public ReadTicket readTicket(long ticketId) {
         Optional<Ticket> t = ticketRepo.findById(ticketId);
