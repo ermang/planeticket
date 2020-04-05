@@ -14,7 +14,7 @@ Used technologies: maven, Spring Boot, Hibernate, junit, mariadb (for local deve
 ##### 2.GENERAL_NOTES
 
 package structure:  
-    **com.eg.planeticket.controller:** rest endpoint classes are stored here
+    **com.eg.planeticket.controller:** rest endpoint classes are stored here  
     **com.eg.planeticket.dto:** DTO classes are here, controller classes receive DTO return DTO, for seperation of concerns  
     **com.eg.planeticket.entity:** @Entity annotated classes are stored here, ORM mapped classes  
     **com.eg.planeticket.repo:** JPA/Hibernate query methods are stored here, each @Entity class has its own Repo such as Company and CompanyRepo  
