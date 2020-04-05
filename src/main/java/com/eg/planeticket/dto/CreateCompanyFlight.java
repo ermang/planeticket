@@ -9,5 +9,5 @@ public class CreateCompanyFlight {
     public OffsetDateTime departure;
     public OffsetDateTime arrival;
     public Long maxCapacity;
-    public BigDecimal price;
+    public BigDecimal basePrice;
 }

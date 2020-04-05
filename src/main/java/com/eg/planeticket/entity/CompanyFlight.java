@@ -33,6 +33,9 @@ public class CompanyFlight extends BaseEntity {
     private Long capacity = 0L;
 
     @NotNull
+    private BigDecimal basePrice;
+
+    @NotNull
     private BigDecimal price;
 
     public Company getCompany() {
@@ -81,6 +84,14 @@ public class CompanyFlight extends BaseEntity {
 
     public void setCapacity(Long capacity) {
         this.capacity = capacity;
+    }
+
+    public BigDecimal getBasePrice() {
+        return basePrice;
+    }
+
+    public void setBasePrice(BigDecimal basePrice) {
+        this.basePrice = basePrice;
     }
 
     public BigDecimal getPrice() {

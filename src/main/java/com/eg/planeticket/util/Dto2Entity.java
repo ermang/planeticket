@@ -6,10 +6,8 @@ import com.eg.planeticket.repo.AirportRepo;
 import com.eg.planeticket.repo.CityRepo;
 import com.eg.planeticket.repo.CompanyRepo;
 import com.eg.planeticket.repo.RouteRepo;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -93,7 +91,8 @@ public class Dto2Entity {
             throw new RuntimeException("ROUTE WITH ID " + createCompanyFlight.routeId + " DOES NOT EXIST");
 
         cf.setMaxCapacity(createCompanyFlight.maxCapacity);
-        cf.setPrice(createCompanyFlight.price);
+        cf.setBasePrice(createCompanyFlight.basePrice);
+        cf.setPrice(createCompanyFlight.basePrice);
         cf.setDeparture(createCompanyFlight.departure);
         cf.setArrival(createCompanyFlight.arrival);
 

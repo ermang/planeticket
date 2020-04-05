@@ -102,4 +102,25 @@ public class MainController {
         return result;
     }
 
+    @PostMapping("/ticket")
+    public Long buyTicket(@RequestBody BuyTicket buyTicket) {
+        Long result = mainService.buyTicket(buyTicket);
+
+        return result;
+    }
+
+    @DeleteMapping("/ticket/{ticketId}")
+    public Long deleteTicket(@PathVariable long ticketId){
+        Long result = mainService.deleteTicket(ticketId);
+
+        return result;
+    }
+
+    @GetMapping("/ticket/{ticketId}")
+    public ReadTicket readTicket(@PathVariable long ticketId){
+        ReadTicket readTicket = mainService.readTicket(ticketId);
+
+        return readTicket;
+    }
+
 }

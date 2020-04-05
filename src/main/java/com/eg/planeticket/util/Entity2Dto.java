@@ -1,10 +1,7 @@
 package com.eg.planeticket.util;
 
 import com.eg.planeticket.dto.*;
-import com.eg.planeticket.entity.Airport;
-import com.eg.planeticket.entity.Company;
-import com.eg.planeticket.entity.CompanyFlight;
-import com.eg.planeticket.entity.Route;
+import com.eg.planeticket.entity.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -96,5 +93,14 @@ public class Entity2Dto {
         rcf.price = companyFlight.getPrice();
 
         return rcf;
+    }
+
+    public ReadTicket ticket2ReadTicket(Ticket ticket) {
+        ReadTicket rt = new ReadTicket();
+        rt.id = ticket.getId();
+        rt.userId = ticket.getUserId();
+        rt.companyFlightId = ticket.getCompanyFlight().getId();
+
+        return rt;
     }
 }
